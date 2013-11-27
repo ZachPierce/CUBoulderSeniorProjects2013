@@ -1,0 +1,27 @@
+# config.txt
+# Welcome to the Talos config file, here we set what can set whether we are in
+# a competition, or just praticing. Along with that we can set how long eah of
+# these periods is, and maybe even more!
+
+# RUN MODE
+# Are you practicing, or are you running at a competition?
+competition
+
+# AUTO_TIME
+# How long should autonomous be in seconds?
+15
+
+# TELE_TIME
+# How long should tele-op be in seconds?
+# Ex. 2 minutes and 45 seconds is 165 in total
+165
+
+# AUTO_CODE_DIR
+# Where is your autonomouns code? Full address
+#/home/talos/auto.py
+/home/me/auto.py
+
+# TELE_OP_CODE
+# Where is your tele-op code? Full address
+#/home/talos/tele.py
+/home/me/tele.py
