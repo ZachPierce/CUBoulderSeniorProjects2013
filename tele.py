@@ -1,6 +1,18 @@
 #!/usr/bin/python
 import sys
 
+
+blueLED = open ('/dev/talos/led/blue', 'w')
+greenLED = open ('/dev/talos/led/green','w')
+redLED = open ('/dev/talos/led/red', 'w')
+yellowLED = open ('/dev/talos/led/yellow', 'w')
+
+#leftMotor = open('/dev/talos/motorF/speed', 'w')
+#rightMotor = open('/dev/talos/motorA/speed', 'w')
+
+
+# TODO: Some timing weirdness with not capturing all
+# joystick input.
 def capture():
 	pipe = open('/dev/input/js0','r')
 	action = []
@@ -40,6 +52,8 @@ def capture():
 
 
 # Tank drive with the two joysticks.
+# Make sure to flush the output, or else python wont do
+# anything until the program ends.
 def buttonPress(btn):
 	# 00 -> x button
 	# 01 -> a button
@@ -55,50 +69,41 @@ def buttonPress(btn):
 	# 0B -> left joy press
 
 	if btn == '00':
-		blueLED = open ('/dev/talos/led/blue')
 		blueLED.write('1')
-		blueLED.close()
+		blueLED.flush()
 	elif btn == '01':
-		greenLED = open ('/dev/talos/led/green')
 		greenLED.write('1')
-		greenLED.close()
+		greenLED.flush()
 	elif btn == '02':
-		redLED = open ('/dev/talos/led/red')
 		redLED.write('1')
-		redLED.close()
+		redLED.flush()
 	elif btn == '03':
-		yellowLED = open ('/dev/talos/led/yellow')
 		yellowLED.write('1')
-		yellowLED.close()
+		yellowLED.flush()
 
 
 def buttonRelease(btn):
 	if btn == '00':
-		blueLED = open ('/dev/talos/led/blue')
 		blueLED.write('0')
-		blueLED.close()
+		blueLED.flush()
 	elif btn == '01':
-		greenLED = open ('/dev/talos/led/green')
 		greenLED.write('0')
-		greenLED.close()
+		greenLED.flush()
 	elif btn == '02':
-		redLED = open ('/dev/talos/led/red')
 		redLED.write('0')
-		redLED.close()
+		redLED.flush()
 	elif btn == '03':
-		yellowLED = open ('/dev/talos/led/yellow')
 		yellowLED.write('0')
-		yellowLED.close()
+		yellowLED.flush()
 
 def leftJoyX(num):
 	return # tank drive, disregard changes in x.
 
 def leftJoyY(num):
 	return
-	# we need a motor connected or else the driver freezes.
-	leftMotor = open('/dev/talos/motorF', w)
+	# no motors to work with
 	leftMotor.write(num)
-	leftMotor.close()
+	leftMotor.flush()
 
 def dPadX(x):
 	if x == '01':
@@ -117,10 +122,9 @@ def rightJoyX(num):
 
 def rightJoyY(num):
 	return
-	# we need a motor connected or else the driver freezes.
-	rightMotor = open('/dev/talos/motorA', w)
+	# no motors to work with
 	rightMotor.write(num)
-	rightMotor.close()
+	rightMotor.flush()
 
 
 capture()
