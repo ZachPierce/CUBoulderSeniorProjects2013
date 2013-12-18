@@ -4,7 +4,7 @@ import sys
 import os
 from time import sleep
 
-#This is the file we read in to get configuration data
+# This is the file we read in to get configuration data
 globalConfigFile = "config.txt"
 
 
@@ -17,6 +17,7 @@ def main():
 
 
 
+# Better variable parseing should problably be used.
 def parseConfig(teleCode, autoCode, teleTime, autoTime, mode, configFile):
     configList = []
     for line in open(configFile):
