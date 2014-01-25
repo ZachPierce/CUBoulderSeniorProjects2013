@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo 0 > /dev/talos/motorA/speed
+echo 0 > /dev/talos/motorB/speed
+echo 0 > /dev/talos/motorC/speed
+echo 0 > /dev/talos/motorD/speed
+echo 0 > /dev/talos/motorE/speed
+echo 0 > /dev/talos/motorF/speed
+
+echo 0 > /dev/talos/buzzer
+
+echo 0 > /dev/talos/led/red
+echo 0 > /dev/talos/led/green
+echo 0 > /dev/talos/led/blue
+echo 0 > /dev/talos/led/yellow
