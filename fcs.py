@@ -3,6 +3,9 @@
 import sys
 import os
 import signal
+import time
+import datetime
+import atexit
 from time import sleep
 
 #This is the file we read in to get configuration data
@@ -15,15 +18,41 @@ autoTime = 0
 mode = 'competition'
 
 
+#The following is everything needed for logging
+st = datetime.datetime.fromtimestamp(time.time()).strftime('fcs_%Y-%m-%d_%H:%M:%S')
+logfh = open(st, 'w+')
+
+def log(msg):
+	st = datetime.datetime.fromtimestamp(time.time()).strftime('[%Y-%m-%d %H:%M:%S] ')
+	logfh.write(st + msg + '\n')
+
+@atexit.register
+def end():
+	log('Exiting the fcs')
+	logfh.close()
+
+
+#This is the main control of the feild control system
+log('Starting the fcs')
 def main():
+    log('Parsing the config file')
     parseConfig()
     killAll()
+    log('Cleared the motor and LED states')
+    log('Waiting for the user to trigger the autonomuous code')
     waitForStart()
+    log('Autonomuos code started')
     runCode(mode, autoTime, autoCode)
+    log('Autonomous code ended')
     killAll()
+    log('Cleared the motor and LED states')
+    log('Waiting for the user to trigger the tele-op code')
     waitForStart()
+    log('Tele-op code started')
     runCode(mode, teleTime, teleCode)
+    log('Tele-op code ended')
     killAll()
+    log('Cleared the motor and LED states')
 
 
 
