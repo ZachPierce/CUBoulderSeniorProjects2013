@@ -1,5 +1,8 @@
 #!/usr/bin/python -u
 import sys
+import time
+import datetime
+import atexit
 
 blueLED =  open('/dev/talos/led/blue','w', 0)
 greenLED = open('/dev/talos/led/green','w', 0)
@@ -20,28 +23,66 @@ buttonB = open('/dev/talos/joystick1/button1', 'r')
 rightFlipper = open('/dev/talos/servo1/position', 'w', 0)
 leftFlipper = open('/dev/talos/servo4/position', 'w', 0)
 
+
+#The following is everything needed for logging
+st = datetime.datetime.fromtimestamp(time.time()).strftime('tele_%Y-%m-%d_%H:%M:%S')
+logfh = open(st, 'w+')
+
+def log(msg):
+	st = datetime.datetime.fromtimestamp(time.time()).strftime('[%Y-%m-%d %H:%M:%S] ')
+	logfh.write(st + msg + '\n')
+
+@atexit.register
+def end():
+	#Close all the file handles to the LEDs
+	blueLED.close()
+	greenLED.close()
+	redLED.close()
+	yellowLED.close()
+	#Close all the file handles to the motors
+	leftFront.close()
+	leftBack.close()
+	rightFront.close()
+	rightBack.close()
+	#Close all the file handles to the controller
+	joyR.close()
+	joyL.close()
+	buttonA.close()
+	buttonB.close()
+	#Close all the file handles to the servos
+	rightFlipper.close()
+	leftFlipper.close()
+	#End the log
+	log('Exiting tele-op')
+	logfh.close()
+
+
+log('Starting tele-op')
 def capture():
 	pipe = open('/dev/input/js0','r')
 	while 1:
 		btnA = buttonA.readline()
 		btnB = buttonB.readline()
 		if btnA == '1\n':
+			log('Left flipper kick out')
 			greenLED.write('1')
 			leftFlipper.write('255') # fully out
 		elif btnA == '0\n':
+			log('Left flipper retract')
 			greenLED.write('0')
 			leftFlipper.write('1') # fully in
 		if btnB == '1\n':
+			log('Right flipper kick out')
 			redLED.write('1')
 			rightFlipper.write('1') # fully out
 		elif btnB == '0\n':
+			log('Right flipper retract')
 			redLED.write('0')
 			rightFlipper.write('255') # fully in
 
 		leftJoyY(joyL.readline())
 		rightJoyY(joyR.readline())
-		print buttonA.readline()
-		print buttonB.readline()
+
 
 # Tank drive with the two joysticks.
 '''
