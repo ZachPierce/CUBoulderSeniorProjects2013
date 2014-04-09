@@ -1,8 +1,9 @@
 #!/usr/bin/python -u
-import sys
-import time
-import datetime
 import atexit
+import datetime
+import time
+import sys
+
 
 blueLED =  open('/dev/talos/led/blue','w', 0)
 greenLED = open('/dev/talos/led/green','w', 0)
@@ -14,7 +15,7 @@ leftBack = open('/dev/talos/motorE/speed', 'w', 0)
 rightFront = open('/dev/talos/motorA/speed', 'w', 0)
 rightBack = open('/dev/talos/motorB/speed', 'w', 0)
 
-joyR = open('/dev/talos/joystick1/axis3', 'r')
+joyR = open('/dev/talos/joystick1/axis4', 'r')
 joyL = open('/dev/talos/joystick1/axis1', 'r')
 
 buttonA = open('/dev/talos/joystick1/button0', 'r')
@@ -24,138 +25,108 @@ rightFlipper = open('/dev/talos/servo1/position', 'w', 0)
 leftFlipper = open('/dev/talos/servo4/position', 'w', 0)
 
 
+
 #The following is everything needed for logging
-st = datetime.datetime.fromtimestamp(time.time()).strftime('tele_%Y-%m-%d_%H:%M:%S')
+st = datetime.datetime.fromtimestamp(time.time()).strftime('/var/www/logs/tele_%Y-%m-%d_%H:%M:%S')
 logfh = open(st, 'w+')
 
 def log(msg):
-	st = datetime.datetime.fromtimestamp(time.time()).strftime('[%Y-%m-%d %H:%M:%S] ')
-	logfh.write(st + msg + '\n')
+        st = datetime.datetime.fromtimestamp(time.time()).strftime('[%Y-%m-%d %H:%M:%S] ')
+        logfh.write(st + msg + '\n')
 
 @atexit.register
 def end():
-	#Close all the file handles to the LEDs
-	blueLED.close()
-	greenLED.close()
-	redLED.close()
-	yellowLED.close()
-	#Close all the file handles to the motors
-	leftFront.close()
-	leftBack.close()
-	rightFront.close()
-	rightBack.close()
-	#Close all the file handles to the controller
-	joyR.close()
-	joyL.close()
-	buttonA.close()
-	buttonB.close()
-	#Close all the file handles to the servos
-	rightFlipper.close()
-	leftFlipper.close()
-	#End the log
-	log('Exiting tele-op')
-	logfh.close()
+        log('Exiting the fcs')
+        logfh.close()
 
 
-log('Starting tele-op')
+
+
 def capture():
-	pipe = open('/dev/input/js0','r')
-	while 1:
-		btnA = buttonA.readline()
-		btnB = buttonB.readline()
-		if btnA == '1\n':
-			log('Left flipper kick out')
-			greenLED.write('1')
-			leftFlipper.write('255') # fully out
-		elif btnA == '0\n':
-			log('Left flipper retract')
-			greenLED.write('0')
-			leftFlipper.write('1') # fully in
-		if btnB == '1\n':
-			log('Right flipper kick out')
-			redLED.write('1')
-			rightFlipper.write('1') # fully out
-		elif btnB == '0\n':
-			log('Right flipper retract')
-			redLED.write('0')
-			rightFlipper.write('255') # fully in
+        pipe = open('/dev/input/js0','r')
+        log('Starting Tele-operation mode')
+        leftJoyValOld = 0
+        rightJoyValOld = 0
+        btnAOld = 0
+        btnBOld = 0
+        while 1:
+                btnA = buttonA.readline()
+                btnB = buttonB.readline()
+                if btnA == '1\n':
+                        greenLED.write('1\n')
+                        leftFlipper.write('255') # fully out
+                        if btnAOld == '0\n':
+                                log('btnA was pressed')
+                        btnAOld = '1\n'
+                elif btnA == '0\n':
+                        greenLED.write('0\n')
+                        leftFlipper.write('1') # fully in
+                        if btnAOld == '1\n':
+                                log('btnA was released')
+                        btnAOld = '0\n'
+                if btnB == '1\n':
+                        redLED.write('1\n')
+                        rightFlipper.write('1') # fully out
+                        if btnB == '0\n':
+                                log('btnB was pressed')
+                        btnBOld = '1\n'
+                elif btnB == '0\n':
+                        redLED.write('0\n')
+                        rightFlipper.write('255') # fully in
+                        if btnB == '0\n':
+                                log('btnB was released')
+                        btnBOld = '0\n'
 
-		leftJoyY(joyL.readline())
-		rightJoyY(joyR.readline())
+                leftJoyVal = joyL.readline()
+                rightJoyVal = joyR.readline()
 
+                leftJoyY(leftJoyVal)
+                rightJoyY(rightJoyVal)
+
+                if leftJoyValOld != leftJoyVal:
+                        log('Left joystick now at: ' + leftJoyVal)
+                if rightJoyValOld != rightJoyVal:
+                        log('Right joystick now at: ' + rightJoyVal)
+                leftJoyValOld = leftJoyVal
+                rightJoyValOld = rightJoyVal
 
 # Tank drive with the two joysticks.
-'''
-def buttonPress(btn):
-	# 00 -> x button
-	# 01 -> a button
-	# 02 -> b button
-	# 03 -> y button
-	# 04 -> lb/l1 button
-	# 05 -> rb/r1 button
-	# 06 -> lt/l2 button
-	# 07 -> rt/r2 button
-	# 08 -> back button
-	# 09 -> start button
-	# 0A -> right joy press
-	# 0B -> left joy press
-
-	if btn == '02':
-		blueLED.write('1')
-	elif btn == '00':
-		greenLED.write('1')
-	elif btn == '01':
-		redLED.write('1')
-	elif btn == '03':
-		yellowLED.write('1')
-
-
-def buttonRelease(btn):
-	if btn == '02':
-		blueLED.write('0')
-	elif btn == '00':
-		greenLED.write('0')
-	elif btn == '01':
-		redLED.write('0')
-	elif btn == '03':
-		yellowLED.write('0')
-'''
 
 def leftJoyX(num):
-	return
+        return
 
 def leftJoyY(num):
-	s = str(num) # converting to str might be unnessacary.
-	if s[0] == '-':
-		leftFront.write(s[1:])
-		leftBack.write(s[1:])
-	else:
-		leftFront.write('-'+s)
-		leftBack.write('-'+s)
+        s = str(num)
+        if s[0] == '-':
+                leftFront.write(s[1:])
+                leftBack.write(s[1:])
+        else:
+                leftFront.write('-'+s)
+                leftBack.write('-'+s)
 
 def dPadX(x):
-	if x == '01':
-		return #left
-	elif x == 'FF':
-		return #right
+        if x == '01':
+                return #left
+        elif x == 'FF':
+                return #right
 
 def dPadY(y):
-	if y == '01':
-		return # up
-	elif y == 'FF':
-		return #down
+        if y == '01':
+                return # up
+        elif y == 'FF':
+                return #down
 
 def rightJoyX(num):
-	return # tank drive, disregard changes in x.
+        return # tank drive, disregard changes in x.
 
 def rightJoyY(num):
-	s = str(num)
-	if s[0] == '-':
-		rightFront.write(s[1:])
-		rightBack.write(s[1:])
-	else:
-		rightFront.write('-'+s)
-		rightBack.write('-'+s)
+        s = str(num)
+        if s[0] == '-':
+                rightFront.write(s[1:])
+                rightBack.write(s[1:])
+        else:
+                rightFront.write('-'+s)
+                rightBack.write('-'+s)
 
 
 capture()
