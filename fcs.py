@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 import sys
 import os
 import signal
@@ -19,17 +19,17 @@ mode = 'competition'
 
 
 #The following is everything needed for logging
-st = datetime.datetime.fromtimestamp(time.time()).strftime('fcs_%Y-%m-%d_%H:%M:%S')
+st = datetime.datetime.fromtimestamp(time.time()).strftime('/var/www/logs/fcs_%Y-%m-%d_%H:%M:%S')
 logfh = open(st, 'w+')
 
 def log(msg):
-	st = datetime.datetime.fromtimestamp(time.time()).strftime('[%Y-%m-%d %H:%M:%S] ')
-	logfh.write(st + msg + '\n')
+        st = datetime.datetime.fromtimestamp(time.time()).strftime('[%Y-%m-%d %H:%M:%S] ')
+        logfh.write(st + msg + '\n')
 
 @atexit.register
 def end():
-	log('Exiting the fcs')
-	logfh.close()
+        log('Exiting the fcs')
+        logfh.close()
 
 
 #This is the main control of the feild control system
@@ -69,7 +69,7 @@ def parseConfig():
         li=line.strip()
         if (not li.startswith("#")) and li:
             configList.append(line.rstrip())
-    
+
     teleCode = configList.pop()
     autoCode = configList.pop()
     teleTime = configList.pop()
@@ -112,7 +112,7 @@ def runCode(mode, time, code):
             os.kill(newPid, signal.SIGKILL)
         else:
             os.wait()
-            
+
 
 
 main()
