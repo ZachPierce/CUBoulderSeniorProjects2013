@@ -18,6 +18,7 @@ else{
         else{
                 #echo "<br><br>Stored in: " . "/var/www/code/" . $_FILES["file"]["name"];
                 echo "<br><br>Stored in: " . "/var/www/code/auto";
+                chmod("/var/www/code/auto", 0777);
         }
 }
 ?>
