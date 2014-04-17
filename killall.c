@@ -17,6 +17,10 @@ int main(){
 
         volatile int done = 0;
         int isZero = 1;
+        
+        if (mtrA == 0){
+                return -1;
+        }
 
         do {
                 done = 1;
