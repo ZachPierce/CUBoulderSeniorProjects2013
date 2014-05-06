@@ -42,6 +42,7 @@ def end():
 
 
 
+# Capture pulls for controller input to see if the state of the controller has changed.
 def capture():
         pipe = open('/dev/input/js0','r')
         log('Starting Tele-operation mode')
