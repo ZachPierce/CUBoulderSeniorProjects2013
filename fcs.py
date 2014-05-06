@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 import sys
 import os
 import signal
@@ -18,7 +17,7 @@ autoTime = 0
 mode = 'competition'
 
 
-#The following is everything needed for logging
+# The following funcations are everything needed for logging
 st = datetime.datetime.fromtimestamp(time.time()).strftime('/var/www/logs/fcs_%Y-%m-%d_%H:%M:%S')
 logfh = open(st, 'w+')
 
@@ -56,6 +55,7 @@ def main():
 
 
 
+# Read in the config file and change how the system runs
 def parseConfig():
     global configList
     global teleCode
@@ -90,14 +90,16 @@ def parseConfig():
 
 
 
+# Waits for a special button to be pressed to start
 def waitForStart():
+    # Waits for the start button to be pressed
     start = open('/dev/talos/joystick1/button7', 'r')
     while int(start.readline()) == 0:
         pass
     start.close()
 
 
-
+# runs the students code, and then kills it after a certain about of time.
 def runCode(mode, time, code):
     print code
     if time <= 0:
