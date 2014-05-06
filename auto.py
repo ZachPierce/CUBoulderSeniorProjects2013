@@ -3,19 +3,22 @@ import sys
 import time
 
 
+# define all the file handles for the LEDs
 blueLED = open ('/dev/talos/led/blue', 'w', 0)
 greenLED = open ('/dev/talos/led/green','w', 0)
 redLED = open ('/dev/talos/led/red', 'w', 0)
 yellowLED = open ('/dev/talos/led/yellow', 'w', 0)
+# define all the file handles for the motors
 mtrA = open('/dev/talos/motorA/speed', 'w', 0)
 mtrB = open('/dev/talos/motorB/speed', 'w', 0)
 mtrE = open('/dev/talos/motorE/speed', 'w', 0)
 mtrF = open('/dev/talos/motorF/speed', 'w', 0)
-
+# define the file handle for the buzzer
 buzzer = open('/dev/talos/buzzer', 'w', 0)
 
 
 while True:
+        # Have the robot drive roughly in a square/cirlce
         blueLED.write(str(0))
         greenLED.write(str(1))
         redLED.write(str(0))
