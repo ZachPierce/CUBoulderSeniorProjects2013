@@ -1,4 +1,7 @@
 #include <stdio.h>
+// Python buffers it's output, even when you tell it not to.
+// C more reliably outputs to files.
+
 
 int main(){
         FILE *mtrA = fopen("/dev/talos/motorA/speed","r+");
@@ -18,6 +21,8 @@ int main(){
         volatile int done = 0;
         int isZero = 1;
         
+        // Check to see if the first file handle is valid. If it isn't
+        // we can assume the rest are bad too.
         if (mtrA == 0){
                 return -1;
         }
